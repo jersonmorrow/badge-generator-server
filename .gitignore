@@ -1,0 +1,17 @@
+/node_modules
+.env
+
+# JPEG
+*.jpg
+*.jpeg
+*.jpe
+*.jif
+*.jfif
+*.jfi
+
+# Scalable Vector Graphics
+*.svg
+*.svgz
+
+# Portable Network Graphics
+*.png
