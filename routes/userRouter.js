@@ -1,14 +1,15 @@
 const bcrypt = require('bcryptjs');
 const router = require('express').Router();
 const User = require('../models/userModel');
+const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
 
-router.post('/register', async (req, res) => {
+router.post('/sign-up', async (req, res) => {
   try {
-    const { email, password, passwordCheck, displayName } = req.body;
+    const { firstName, lastName, email, password, passwordCheck } = req.body;
 
     // validation
-    if (!email || !password || !passwordCheck)
+    if (!firstName || !lastName || !email || !password || !passwordCheck)
       return res.status(400).json({ msg: 'Not all field have been entered' });
     if (password !== passwordCheck)
       return res
@@ -22,8 +23,6 @@ router.post('/register', async (req, res) => {
         .status(400)
         .json({ msg: 'An account with this email already exists' });
 
-    if (!displayName) displayName = email;
-
     // hash password with bycript
 
     const salt = await bcrypt.genSalt();
@@ -31,9 +30,10 @@ router.post('/register', async (req, res) => {
 
     // save user to database
     const newUser = new User({
+      firstName,
+      lastName,
       email,
       password: passwordHash,
-      displayName,
     });
 
     const savedUser = await newUser.save();
@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
       token,
       user: {
         id: user._id,
-        displayName: user.displayName,
+        name: user.firstName,
         email: user.email,
       },
     });
@@ -104,7 +104,7 @@ router.post('/tokenIsValid', async (req, res) => {
 router.get('/', auth, async (req, res) => {
   const user = await User.findById(req.user);
   res.json({
-    displayName: user.displayName,
+    name: user.firstName,
     id: user._id,
   });
 });
