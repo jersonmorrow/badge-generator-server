@@ -16,13 +16,6 @@ router.post('/sign-up', async (req, res) => {
         .status(400)
         .json({ msg: 'Enter the same password twice for verification' });
 
-    const existingUser = await User.findOne({ email: email });
-
-    if (existingUser)
-      return res
-        .status(400)
-        .json({ msg: 'An account with this email already exists' });
-
     // hash password with bycript
 
     const salt = await bcrypt.genSalt();
@@ -67,7 +60,6 @@ router.post('/login', async (req, res) => {
       user: {
         id: user._id,
         name: user.firstName,
-        email: user.email,
       },
     });
   } catch (error) {
@@ -107,6 +99,18 @@ router.get('/', auth, async (req, res) => {
     name: user.firstName,
     id: user._id,
   });
+});
+
+router.post('/check-user', async (req, res) => {
+  const { email } = req.body;
+
+  const existingUser = await User.findOne({ email: email });
+
+  if (existingUser) {
+    return res.status(200).json({ status: 'EXISTS' });
+  } else {
+    return res.status(200).json({ status: 'OK' });
+  }
 });
 
 module.exports = router;
