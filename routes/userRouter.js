@@ -45,14 +45,10 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Not all field have been entered' });
 
     const user = await User.findOne({ email: email });
-    if (!user)
-      return res
-        .status(400)
-        .json({ msg: 'No account with this email has been registered' });
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch)
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Invalid Password' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
     res.json({
@@ -109,7 +105,7 @@ router.post('/check-user', async (req, res) => {
   if (existingUser) {
     return res.status(200).json({ status: 'EXISTS' });
   } else {
-    return res.status(200).json({ status: 'OK' });
+    return res.status(200).json({ status: 'DOES NOT EXISTS' });
   }
 });
 
