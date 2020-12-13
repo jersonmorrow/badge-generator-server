@@ -28,6 +28,6 @@ mongoose.connect(
   }
 );
 
-// // set up routes
-
+// routes
 app.use('/users', require('./routes/userRouter'));
+app.use('/events', require('./routes/eventRouter'));
