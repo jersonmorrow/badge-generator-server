@@ -40,4 +40,23 @@ router.delete('/delete-event', auth, async (req, res) => {
   }
 });
 
+router.patch('/events/:id', auth, async (req, res) => {
+  try {
+    const event = await EventBadge.findOne({ _id: req.params.id });
+
+    if (req.body.title) {
+      event.title = req.body.title;
+    }
+
+    if (req.body.organizer) {
+      event.organizer = req.body.organizer;
+    }
+
+    const updatedEvent = await event.save();
+    res.send(updatedEvent);
+  } catch (error) {
+    res.status(400).json({ error: "Event doesn't exists!" });
+  }
+});
+
 module.exports = router;
