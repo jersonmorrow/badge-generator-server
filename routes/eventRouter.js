@@ -25,4 +25,19 @@ router.post('/new-event', auth, async (req, res) => {
   }
 });
 
+router.delete('/delete-event', auth, async (req, res) => {
+  try {
+    const { _id } = req.body;
+    if (!_id)
+      return res
+        .status(400)
+        .json({ msg: 'No event id founded, action denied' });
+
+    const deletedEvent = await EventBadge.findByIdAndDelete(_id);
+    res.json(deletedEvent);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
