@@ -25,22 +25,16 @@ router.post('/new-event', auth, async (req, res) => {
   }
 });
 
-router.delete('/delete-event', auth, async (req, res) => {
+router.delete('/delete/:id', auth, async (req, res) => {
   try {
-    const { _id } = req.body;
-    if (!_id)
-      return res
-        .status(400)
-        .json({ msg: 'No event id founded, action denied' });
-
-    const deletedEvent = await EventBadge.findByIdAndDelete(_id);
-    res.json(deletedEvent);
+    const deletedEvent = await EventBadge.deleteOne({ _id: req.params.id });
+    res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: 'No event founded, action denied' });
   }
 });
 
-router.patch('/update-event/:id', auth, async (req, res) => {
+router.patch('/update/:id', auth, async (req, res) => {
   try {
     const event = await EventBadge.findOne({ _id: req.params.id });
 
