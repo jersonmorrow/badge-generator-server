@@ -4,9 +4,9 @@ const EventBadge = require('../models/eventModel');
 
 router.post('/new-event', auth, async (req, res) => {
   try {
-    const { title, organizer, location, time, img } = req.body;
+    const { title, organizer, location, date, img } = req.body;
 
-    if (!title || !organizer || !location || !time)
+    if (!title || !organizer || !location || !date)
       return res.status(400).json({ msg: 'Not all field have been entered' });
 
     const newEvent = new EventBadge({
@@ -14,7 +14,7 @@ router.post('/new-event', auth, async (req, res) => {
       title,
       organizer,
       location,
-      time,
+      date,
       img,
     });
 
