@@ -1,29 +1,61 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
 const EventBadge = require('../models/eventModel');
+const multer = require('multer');
 
-router.post('/new-event', auth, async (req, res) => {
-  try {
-    const { title, organizer, location, date, img } = req.body;
-
-    if (!title || !organizer || !location || !date)
-      return res.status(400).json({ msg: 'Not all field have been entered' });
-
-    const newEvent = new EventBadge({
-      userId: req.user,
-      title,
-      organizer,
-      location,
-      date,
-      img,
-    });
-
-    const savedEvent = await newEvent.save();
-    res.json(savedEvent);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
 });
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    // rejects storing a file
+    cb(null, false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter: fileFilter,
+});
+
+router.post(
+  '/new-event',
+  auth,
+  upload.single('eventImage'),
+  async (req, res) => {
+    try {
+      const { title, organizer, location, date } = req.body;
+
+      if (!title || !organizer || !location || !date)
+        return res.status(400).json({ msg: 'Not all field have been entered' });
+
+      const newEvent = new EventBadge({
+        userId: req.user,
+        title,
+        organizer,
+        location,
+        date,
+        eventImage: req.file.path,
+      });
+
+      const savedEvent = await newEvent.save();
+      res.status(200).json(savedEvent);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 router.delete('/delete/:id', auth, async (req, res) => {
   try {

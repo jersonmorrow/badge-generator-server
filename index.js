@@ -12,6 +12,7 @@ app.listen(PORT, () => console.log(`Server has started on port ${PORT}`));
 
 app.use(express.json());
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
 
 // Set up Mongoose
 
