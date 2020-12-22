@@ -36,9 +36,14 @@ router.post(
   async (req, res) => {
     try {
       const { title, organizer, location, date } = req.body;
+      let eventImage;
 
       if (!title || !organizer || !location || !date)
         return res.status(400).json({ msg: 'Not all field have been entered' });
+
+      if (req.file !== undefined) {
+        eventImage = req.file.path;
+      }
 
       const newEvent = new EventBadge({
         userId: req.user,
@@ -46,7 +51,7 @@ router.post(
         organizer,
         location,
         date,
-        eventImage: req.file.path,
+        eventImage,
       });
 
       const savedEvent = await newEvent.save();

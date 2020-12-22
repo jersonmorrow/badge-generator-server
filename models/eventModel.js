@@ -6,7 +6,7 @@ const eventSchema = new mongoose.Schema({
   organizer: { type: String, required: true },
   location: { type: String, required: true },
   date: { type: Date, default: Date.now, required: true },
-  eventImage: { type: String, required: true },
+  eventImage: { type: String },
 });
 
 module.exports = EventBadge = mongoose.model('event', eventSchema);
