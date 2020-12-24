@@ -103,4 +103,13 @@ router.get('/:id', auth, async (req, res) => {
   res.send(event);
 });
 
+router.get('/', auth, async (req, res) => {
+  try {
+    const events = await EventBadge.find({ userId: req.user });
+    res.send(events);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
