@@ -5,8 +5,8 @@ const eventSchema = new mongoose.Schema({
   title: { type: String, required: true },
   organizer: { type: String, required: true },
   location: { type: String, required: true },
-  time: { type: Date, default: Date.now, required: true },
-  img: { data: Buffer, contentType: String },
+  date: { type: Date, default: Date.now, required: true },
+  eventImage: { type: String },
 });
 
 module.exports = EventBadge = mongoose.model('event', eventSchema);
