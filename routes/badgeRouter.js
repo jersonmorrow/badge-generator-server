@@ -27,4 +27,13 @@ router.post('/new-badge/:eventId', auth, async (req, res) => {
   }
 });
 
+router.delete('/delete/:id', auth, async (req, res) => {
+  try {
+    await Badge.deleteOne({ _id: req.params.id });
+    res.status(204).send();
+  } catch (error) {
+    res.status(400).json({ error: 'No badge founded, action denied' });
+  }
+});
+
 module.exports = router;
