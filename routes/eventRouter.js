@@ -42,7 +42,7 @@ router.post(
         return res.status(400).json({ msg: 'Not all field have been entered' });
 
       if (req.file !== undefined) {
-        eventImage = req.file.path;
+        eventImage = `http://localhost:5000/${req.file.path}`;
       }
 
       const newEvent = new EventBadge({
@@ -71,32 +71,41 @@ router.delete('/delete/:id', auth, async (req, res) => {
   }
 });
 
-router.patch('/update/:id', auth, async (req, res) => {
-  try {
-    const event = await EventBadge.findOne({ _id: req.params.id });
+router.patch(
+  '/update/:id',
+  auth,
+  upload.single('eventImage'),
+  async (req, res) => {
+    try {
+      const event = await EventBadge.findOne({ _id: req.params.id });
 
-    if (req.body.title) {
-      event.title = req.body.title;
+      if (req.body.title) {
+        event.title = req.body.title;
+      }
+
+      if (req.body.organizer) {
+        event.organizer = req.body.organizer;
+      }
+
+      if (req.body.location) {
+        event.location = req.body.location;
+      }
+
+      if (req.body.time) {
+        event.time = req.body.time;
+      }
+
+      if (req.file !== undefined) {
+        event.eventImage = `http://localhost:5000/${req.file.path}`;
+      }
+
+      const updatedEvent = await event.save();
+      res.send(updatedEvent);
+    } catch (error) {
+      res.status(400).json({ error: "Event doesn't exists!" });
     }
-
-    if (req.body.organizer) {
-      event.organizer = req.body.organizer;
-    }
-
-    if (req.body.location) {
-      event.location = req.body.location;
-    }
-
-    if (req.body.time) {
-      event.time = req.body.time;
-    }
-
-    const updatedEvent = await event.save();
-    res.send(updatedEvent);
-  } catch (error) {
-    res.status(400).json({ error: "Event doesn't exists!" });
   }
-});
+);
 
 router.get('/:id', auth, async (req, res) => {
   const event = await EventBadge.findOne({ _id: req.params.id });
