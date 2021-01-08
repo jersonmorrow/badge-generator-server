@@ -76,4 +76,13 @@ router.get('/:id', auth, async (req, res) => {
   res.send(badge);
 });
 
+router.get('/', auth, async (req, res) => {
+  try {
+    const badges = await Badge.find({ userId: req.user });
+    res.send(badges);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
