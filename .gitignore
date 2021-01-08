@@ -9,18 +9,9 @@
 *.jfif
 *.jfi
 
-<<<<<<< HEAD
-# Portable Network Graphics
-*.png
-
-# Scalable Vector Graphics
-*.svg
-*.svgz
-=======
 # Scalable Vector Graphics
 *.svg
 *.svgz
 
 # Portable Network Graphics
 *.png
->>>>>>> event-request
