@@ -71,4 +71,9 @@ router.patch('/update/:id', auth, async (req, res) => {
   }
 });
 
+router.get('/:id', auth, async (req, res) => {
+  const badge = await Badge.findOne({ _id: req.params.id });
+  res.send(badge);
+});
+
 module.exports = router;
