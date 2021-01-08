@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const badgeSchema = new mongoose.Schema({
   userId: { type: String, required: true },
+  eventId: { type: String, required: true },
   name: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true },

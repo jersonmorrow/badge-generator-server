@@ -32,3 +32,4 @@ mongoose.connect(
 // routes
 app.use('/users', require('./routes/userRouter'));
 app.use('/events', require('./routes/eventRouter'));
+app.use('/badges', require('./routes/badgeRouter'));
