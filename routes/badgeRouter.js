@@ -11,7 +11,7 @@ router.post('/new-badge/:eventId', auth, async (req, res) => {
 
     const newBadge = new Badge({
       userId: req.user,
-      eventId: req.params.id,
+      eventId: req.params.eventId,
       name,
       lastName,
       email,
@@ -33,6 +33,41 @@ router.delete('/delete/:id', auth, async (req, res) => {
     res.status(204).send();
   } catch (error) {
     res.status(400).json({ error: 'No badge founded, action denied' });
+  }
+});
+
+router.patch('/update/:id', auth, async (req, res) => {
+  try {
+    const badge = await Badge.findOne({ _id: req.params.id });
+
+    if (req.body.name) {
+      badge.name = req.body.name;
+    }
+
+    if (req.body.lastName) {
+      badge.lastName = req.body.lastName;
+    }
+
+    if (req.body.email) {
+      badge.email = req.body.email;
+    }
+
+    if (req.body.jobTitle) {
+      badge.jobTitle = req.body.jobTitle;
+    }
+
+    if (req.body.categorie) {
+      badge.categorie = req.body.categorie;
+    }
+
+    if (req.body.badgeImage) {
+      badge.badgeImage = req.body.badgeImage;
+    }
+
+    const updatedBadge = await badge.save();
+    res.send(updatedBadge);
+  } catch (error) {
+    res.status(400).json({ error: "Badge doesn't exists!" });
   }
 });
 
