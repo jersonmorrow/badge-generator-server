@@ -4,15 +4,22 @@ const Badge = require('../models/badgeModel');
 
 router.post('/new-badge/:eventId', auth, async (req, res) => {
   try {
-    const { name, lastName, email, jobTitle, categorie, badgeImage } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      jobTitle,
+      categorie,
+      badgeImage,
+    } = req.body;
 
-    if (!name || !lastName || !email || !jobTitle || !categorie || !badgeImage)
+    if (!firstName || !lastName || !email || !jobTitle || !categorie)
       return res.status(400).json({ msg: 'Not all field have been entered' });
 
     const newBadge = new Badge({
       userId: req.user,
       eventId: req.params.eventId,
-      name,
+      firstName,
       lastName,
       email,
       jobTitle,
@@ -40,8 +47,8 @@ router.patch('/update/:id', auth, async (req, res) => {
   try {
     const badge = await Badge.findOne({ _id: req.params.id });
 
-    if (req.body.name) {
-      badge.name = req.body.name;
+    if (req.body.firstName) {
+      badge.firstName = req.body.firstName;
     }
 
     if (req.body.lastName) {
@@ -71,14 +78,14 @@ router.patch('/update/:id', auth, async (req, res) => {
   }
 });
 
-router.get('/:id', auth, async (req, res) => {
+router.get('/badge/:id', auth, async (req, res) => {
   const badge = await Badge.findOne({ _id: req.params.id });
   res.send(badge);
 });
 
-router.get('/', auth, async (req, res) => {
+router.get('/:eventId', auth, async (req, res) => {
   try {
-    const badges = await Badge.find({ userId: req.user });
+    const badges = await Badge.find({ eventId: req.params.eventId });
     res.send(badges);
   } catch (error) {
     res.status(500).json({ error: error.message });

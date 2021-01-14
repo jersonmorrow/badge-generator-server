@@ -51,8 +51,14 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid Password' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
+
+    res.status(202).cookie('x_auth_token', token, {
+      // maxAge: 3600,
+      httpOnly: true,
+      sameSite: 'strict',
+    });
+
     res.json({
-      token,
       user: {
         id: user._id,
         name: user.firstName,
@@ -61,6 +67,18 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+router.post('/logout', (req, res) => {
+  const token = req.cookies.x_auth_token;
+  res
+    .status(202)
+    .cookie('x_auth_token', token, {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: 'strict',
+    })
+    .send('cookie invalidate');
 });
 
 router.delete('/delete', auth, async (req, res) => {
@@ -74,7 +92,7 @@ router.delete('/delete', auth, async (req, res) => {
 
 router.post('/tokenIsValid', async (req, res) => {
   try {
-    const token = req.header('x-auth-token');
+    const token = req.cookies.x_auth_token;
     if (!token) return res.json(false);
 
     const verified = jwt.verify(token, process.env.JWT_TOKEN);
@@ -83,7 +101,7 @@ router.post('/tokenIsValid', async (req, res) => {
     const user = await User.findById(verified.id);
     if (!user) return res.json(false);
 
-    return res.json(true);
+    return res.status(200).json(true);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
