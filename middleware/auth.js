@@ -1,16 +1,15 @@
 const jwt = require('jsonwebtoken');
+const { config } = require('../config/index');
 
 const auth = (req, res, next) => {
   try {
-    // const token = req.header('x-auth-token');
     const token = req.cookies.x_auth_token;
-    console.log(token);
     if (!token)
       return res
         .status(401)
         .json({ msg: 'No authentication token, authorization denied' });
 
-    const verified = jwt.verify(token, process.env.JWT_TOKEN);
+    const verified = jwt.verify(token, config.authJwtSecret);
     if (!verified)
       return res
         .status(401)

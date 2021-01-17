@@ -3,6 +3,8 @@ const router = require('express').Router();
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
+const { config } = require('../config/index');
+const TWENTY_FOUR_HOURS = 86400000; // 24HR in milliseconds
 
 router.post('/sign-up', async (req, res) => {
   try {
@@ -50,10 +52,10 @@ router.post('/login', async (req, res) => {
     if (!isPasswordMatch)
       return res.status(400).json({ msg: 'Invalid Password' });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
+    const token = jwt.sign({ id: user._id }, config.authJwtSecret);
 
     res.status(202).cookie('x_auth_token', token, {
-      // maxAge: 3600,
+      maxAge: TWENTY_FOUR_HOURS,
       httpOnly: true,
       sameSite: 'strict',
     });
@@ -95,7 +97,7 @@ router.post('/tokenIsValid', async (req, res) => {
     const token = req.cookies.x_auth_token;
     if (!token) return res.json(false);
 
-    const verified = jwt.verify(token, process.env.JWT_TOKEN);
+    const verified = jwt.verify(token, config.authJwtSecret);
     if (!verified) return res.json(false);
 
     const user = await User.findById(verified.id);

@@ -1,3 +1,4 @@
+// Import modules
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,16 +7,19 @@ const app = express();
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 
+// Environment Variables
+const { config } = require('./config/index');
+
 // setttings
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server has started on port ${PORT}`));
+app.listen(config.port, () =>
+  console.log(`Server runing on port ${config.port}`)
+);
 
 // Middlewares
-
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: config.clientUrl,
     credentials: true,
   })
 );
@@ -23,10 +27,9 @@ app.use('/uploads', express.static('uploads'));
 app.use(logger('dev'));
 app.use(cookieParser());
 
-// Set up Mongoose
-
+// Mongoose
 mongoose.connect(
-  process.env.MONGODB_CONNECTION_STRING,
+  config.dbConnection,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
