@@ -1,7 +1,9 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
 const EventBadge = require('../models/eventModel');
+const Badge = require('../models/badgeModel');
 const multer = require('multer');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -16,7 +18,6 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
-    // rejects storing a file
     cb(null, false);
   }
 };
@@ -42,7 +43,7 @@ router.post(
         return res.status(400).json({ msg: 'Not all field have been entered' });
 
       if (req.file !== undefined) {
-        eventImage = `http://localhost:5000/${req.file.path}`;
+        eventImage = req.file.path;
       }
 
       const newEvent = new EventBadge({
@@ -64,8 +65,18 @@ router.post(
 
 router.delete('/delete/:id', auth, async (req, res) => {
   try {
-    const deletedEvent = await EventBadge.deleteOne({ _id: req.params.id });
-    res.status(204).send();
+    const eventDoc = await EventBadge.findOne({ _id: req.params.id });
+    let filePath = eventDoc.eventImage;
+
+    if (filePath) {
+      fs.unlinkSync(filePath);
+      console.log('image deleted successfully');
+    }
+
+    await EventBadge.deleteOne({ _id: req.params.id });
+    await Badge.deleteMany({ eventId: req.params.id });
+
+    res.status(204).send('deleted successfully');
   } catch (error) {
     res.status(400).json({ error: 'No event founded, action denied' });
   }
@@ -91,12 +102,19 @@ router.patch(
         event.location = req.body.location;
       }
 
-      if (req.body.time) {
-        event.time = req.body.time;
+      if (req.body.date) {
+        event.date = req.body.date;
       }
 
       if (req.file !== undefined) {
-        event.eventImage = `http://localhost:5000/${req.file.path}`;
+        let filePath = event.eventImage;
+        if (filePath) {
+          if (filePath != req.file.path) {
+            fs.unlinkSync(filePath);
+            console.log('image replaced successfully');
+          }
+        }
+        event.eventImage = req.file.path;
       }
 
       const updatedEvent = await event.save();
@@ -119,11 +137,6 @@ router.get('/', auth, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
-
-router.get('/:id', auth, async (req, res) => {
-  const event = await EventBadge.findOne({ _id: req.params.id });
-  res.send(event);
 });
 
 module.exports = router;

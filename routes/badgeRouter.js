@@ -67,7 +67,9 @@ router.patch('/update/:id', auth, async (req, res) => {
       badge.categorie = req.body.categorie;
     }
 
-    if (req.body.badgeImage) {
+    if (req.body.badgeImage == '') {
+      badge.badgeImage = req.body.badgeImage;
+    } else {
       badge.badgeImage = req.body.badgeImage;
     }
 
