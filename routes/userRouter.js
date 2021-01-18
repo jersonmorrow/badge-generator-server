@@ -58,6 +58,7 @@ router.post('/login', async (req, res) => {
       maxAge: TWENTY_FOUR_HOURS,
       httpOnly: true,
       secure: true,
+      sameSite: 'Strict',
     });
 
     res.json({
@@ -79,6 +80,7 @@ router.post('/logout', (req, res) => {
       maxAge: 0,
       httpOnly: true,
       secure: true,
+      sameSite: 'Strict',
     })
     .send('cookie invalidate');
 });
