@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
     res.status(202).cookie('x_auth_token', token, {
       maxAge: TWENTY_FOUR_HOURS,
       httpOnly: true,
-      sameSite: 'strict',
+      secure: true,
     });
 
     res.json({
@@ -78,7 +78,7 @@ router.post('/logout', (req, res) => {
     .cookie('x_auth_token', token, {
       maxAge: 0,
       httpOnly: true,
-      sameSite: 'strict',
+      secure: true,
     })
     .send('cookie invalidate');
 });
