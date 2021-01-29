@@ -5,7 +5,7 @@ const Badge = require('../models/badgeModel');
 const fs = require('fs');
 const uploadFileMiddleware = require('../middleware/uploadImage');
 
-router.post('/new-event', auth, uploadFileMiddleware, async (req, res) => {
+router.post('/new-event', auth, async (req, res) => {
   try {
     const { title, organizer, location, date } = req.body;
     let eventImage;
@@ -13,8 +13,8 @@ router.post('/new-event', auth, uploadFileMiddleware, async (req, res) => {
     if (!title || !organizer || !location || !date)
       return res.status(400).json({ msg: 'Not all field have been entered' });
 
-    if (req.file !== undefined) {
-      eventImage = req.file.path;
+    if (req.body.eventImage !== '') {
+      eventImage = req.body.eventImage;
     }
 
     const newEvent = new EventBadge({

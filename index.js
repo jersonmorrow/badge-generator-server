@@ -6,6 +6,9 @@ require('dotenv').config();
 const app = express();
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const upload = multer();
 
 // Environment Variables
 const { config } = require('./config/index');
@@ -23,10 +26,15 @@ app.use(
     credentials: true,
   })
 );
-app.set('trust proxy', 1);
-app.use('/uploads', express.static('uploads'));
+// app.set('trust proxy', 1);
+// app.use('/uploads', express.static('uploads'));
 app.use(logger('dev'));
 app.use(cookieParser());
+app.use(upload.array());
+app.use(express.static('public'));
+
+// for parsing application/json
+app.use(bodyParser.json());
 
 // Mongoose
 mongoose.connect(
