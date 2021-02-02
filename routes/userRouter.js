@@ -57,8 +57,8 @@ router.post('/login', async (req, res) => {
     res.status(202).cookie('x_auth_token', token, {
       maxAge: TWENTY_FOUR_HOURS,
       httpOnly: true,
-      // secure: true,
-      // sameSite: 'None',
+      secure: true,
+      sameSite: 'None',
     });
 
     res.json({
