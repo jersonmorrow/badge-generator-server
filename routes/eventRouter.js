@@ -2,8 +2,6 @@ const router = require('express').Router();
 const auth = require('../middleware/auth');
 const EventBadge = require('../models/eventModel');
 const Badge = require('../models/badgeModel');
-const fs = require('fs');
-const uploadFileMiddleware = require('../middleware/uploadImage');
 
 router.post('/new-event', auth, async (req, res) => {
   try {
@@ -35,13 +33,6 @@ router.post('/new-event', auth, async (req, res) => {
 
 router.delete('/delete/:id', auth, async (req, res) => {
   try {
-    const eventDoc = await EventBadge.findOne({ _id: req.params.id });
-    let filePath = eventDoc.eventImage;
-
-    if (filePath) {
-      fs.unlinkSync(filePath);
-    }
-
     await EventBadge.deleteOne({ _id: req.params.id });
     await Badge.deleteMany({ eventId: req.params.id });
 
@@ -51,7 +42,7 @@ router.delete('/delete/:id', auth, async (req, res) => {
   }
 });
 
-router.patch('/update/:id', auth, uploadFileMiddleware, async (req, res) => {
+router.patch('/update/:id', auth, async (req, res) => {
   try {
     const event = await EventBadge.findOne({ _id: req.params.id });
 
@@ -71,14 +62,8 @@ router.patch('/update/:id', auth, uploadFileMiddleware, async (req, res) => {
       event.date = req.body.date;
     }
 
-    if (req.file !== undefined) {
-      let filePath = event.eventImage;
-      if (filePath) {
-        if (filePath != req.file.path) {
-          fs.unlinkSync(filePath);
-        }
-      }
-      event.eventImage = req.file.path;
+    if (req.body.eventImage) {
+      event.eventImage = req.body.eventImage;
     }
 
     const updatedEvent = await event.save();

@@ -26,8 +26,7 @@ app.use(
     credentials: true,
   })
 );
-// app.set('trust proxy', 1);
-// app.use('/uploads', express.static('uploads'));
+app.set('trust proxy', 1);
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(upload.array());
